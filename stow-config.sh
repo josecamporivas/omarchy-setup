@@ -23,7 +23,9 @@ fi
 echo "🚀 Beginning stow operation..."
 echo "Packages to stow: ${PACKAGES[*]}"
 
-stow -R -t ~ "${PACKAGES[@]}"
+if ! stow --adopt -R -t ~ "${PACKAGES[@]}"; then
+    echo "🔴 Error: stow failed. Review the conflict messages above."
+    exit 1
+fi
 
 echo "✅ Stow operation complete."
-echo "Review any 'CONFLICT' messages above to resolve pre-existing files."
