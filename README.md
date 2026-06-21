@@ -26,4 +26,3 @@ If you want to run GNU Stow directly:
 ```bash
 ./stow-config.sh
 ```
-
