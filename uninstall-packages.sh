@@ -11,6 +11,7 @@ readonly PACMAN_PACKAGES=(
     typora
     spotify
     signal-desktop
+    chromium
 )
 
 readonly WEBAPPS=(
