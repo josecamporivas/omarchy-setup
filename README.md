@@ -22,3 +22,16 @@ Run the setup from the repo root:
 ```bash
 ./full-setup.sh
 ```
+
+## Additional packages (NOT installed by default)
+
+This setup does not install the following packages by default, but they are available in the `additional-packages` folder. You can install them by running the individual scripts, for example:
+
+```bash
+./additional-packages/install-latex.sh
+```
+
+Here are the additional packages available:
+- LaTeX (`install-latex.sh`)
+- Maven (`install-maven.sh`)
+- Bun (`install-bun.sh`)
