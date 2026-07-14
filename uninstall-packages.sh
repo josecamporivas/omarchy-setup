@@ -51,6 +51,12 @@ remove_pacman_packages() {
     sudo pacman -Rns --noconfirm "${installed[@]}" || {
         echo "Pacman removal completed with warnings."
     }
+
+    # Clean up leftover .desktop files in ~/.local/share/applications
+    local desktop_dir="$HOME/.local/share/applications"
+    for pkg in "${installed[@]}"; do
+        rm -f "$desktop_dir/$pkg.desktop" || true
+    done
 }
 
 remove_webapps() {
