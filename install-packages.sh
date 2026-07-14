@@ -6,6 +6,7 @@ cd "$(dirname "$0")" || exit 1
 
 readonly PACMAN_PACKAGES=(
     stow
+    kate
 )
 
 readonly AUR_PACKAGES=()
