@@ -31,3 +31,13 @@ if ! stow --adopt -R -t ~ "${PACKAGES[@]}"; then
 fi
 
 echo "✅ Stow operation complete."
+
+# Reload Hyprland config so changes take effect immediately
+if command -v hyprctl &> /dev/null; then
+    hyprctl reload && echo "🔄 Hyprland config reloaded."
+fi
+
+# Restart hypridle to apply idle/lock timeout changes
+if systemctl --user is-active --quiet hypridle; then
+    systemctl --user restart hypridle && echo "🔄 hypridle restarted."
+fi
