@@ -6,6 +6,7 @@ readonly PACKAGES=(
     bash
     hyprland
     waybar
+    systemd
 )
 
 
