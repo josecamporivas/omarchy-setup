@@ -8,8 +8,8 @@
         },
         {
           "id": "omarchy.clock",
-          "format": "dddd HH:mm",
-          "formatAlt": "d MMMM 'W'ww yyyy",
+          "format": "dd.MM.yyyy | hh:mm",
+          "formatAlt": "dd MMMM 'W'ww yyyy",
           "verticalFormat": "HH\n—\nmm",
           "birthYear": 2002,
           "lifeExpectancy": 90
