@@ -19,7 +19,8 @@
           "formatAlt": "dd MMMM 'W'ww yyyy",
           "verticalFormat": "HH\n—\nmm",
           "birthYear": 2002,
-          "lifeExpectancy": 90
+          "lifeExpectancy": 90,
+          "weekStartDay": "monday"
         },
         {
           "id": "omarchy.keyboard-layout"
