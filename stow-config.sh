@@ -5,8 +5,6 @@
 readonly PACKAGES=(
     bash
     hyprland
-    waybar
-    systemd
 )
 
 
@@ -38,7 +36,5 @@ if command -v hyprctl &> /dev/null; then
     hyprctl reload && echo "🔄 Hyprland config reloaded."
 fi
 
-# Restart hypridle to apply idle/lock timeout changes
-if systemctl --user is-active --quiet hypridle; then
-    systemctl --user restart hypridle && echo "🔄 hypridle restarted."
-fi
+# The Omarchy shell (bar, idle, notifications) hot-reloads shell.json on save.
+# Waybar and the systemd battery monitor were dropped in Omarchy quattro.
