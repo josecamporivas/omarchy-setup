@@ -5,6 +5,7 @@
 readonly PACKAGES=(
     bash
     hyprland
+    omarchy
 )
 
 
