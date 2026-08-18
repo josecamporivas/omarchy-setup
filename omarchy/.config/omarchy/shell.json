@@ -57,6 +57,9 @@
           "id": "omarchy.monitor"
         },
         {
+          "id": "io.github.josecamporivas.ticktick"
+        },
+        {
           "id": "omarchy.power"
         }
       ]
