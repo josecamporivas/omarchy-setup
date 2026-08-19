@@ -4,6 +4,7 @@
 # An array of all Stow packages to be managed.
 readonly PACKAGES=(
     bash
+    foot
     hyprland
     omarchy
     plugins
