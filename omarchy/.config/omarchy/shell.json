@@ -49,6 +49,9 @@
           "barLabel": "Icon"
         },
         {
+          "id": "io.github.josecamporivas.cliamp"
+        },
+        {
           "id": "omarchy.bluetooth"
         },
         {

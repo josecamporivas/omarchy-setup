@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.josecamporivas.cliamp",
+  "name": "cliamp",
+  "version": "1.0.1",
+  "author": "Jose Campo",
+  "license": "MIT",
+  "description": "Winamp-style now-playing card for cliamp, toggled from the bar",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "cliamp",
+    "description": "Click the icon to open or close the cliamp now-playing card with live spectrum",
+    "category": "Media",
+    "allowMultiple": false
+  }
+}
