@@ -16,6 +16,18 @@ function task(over) {
   }, over)
 }
 
+// TickTick serializes every due date as an instant, and an all-day task as
+// local midnight converted to UTC. Building the stamp from a local Date keeps
+// every assertion below true in any test runner's timezone.
+function stampFor(localDate) {
+  const iso = localDate.toISOString().replace(/\.\d{3}Z$/, '')
+  return `${iso.slice(0, 10)}T${iso.slice(11)}.000+0000`
+}
+
+function allDayStamp(year, month, day) {
+  return stampFor(new Date(year, month - 1, day, 0, 0, 0))
+}
+
 // --- dates ---------------------------------------------------------------
 
 test('parseApiDate handles the +0000 offset TickTick sends', () => {
@@ -28,10 +40,11 @@ test('parseApiDate returns null on junk', () => {
   assert.equal(Model.parseApiDate('not a date'), null)
 })
 
-test('an all-day due date keeps its calendar day regardless of local zone', () => {
-  // UTC midnight would land on the 11th anywhere west of Greenwich if this
-  // were parsed as an instant instead of a calendar date.
-  const due = Model.taskDueDate(task({ dueDate: '2026-08-12T00:00:00.000+0000' }))
+test('an all-day due date lands on its calendar day in the local zone', () => {
+  // The API stores an all-day task as local midnight converted to UTC, so a
+  // Madrid task due on the 12th arrives as the 11th at 22:00Z. The parsed
+  // instant must come back to the 12th, not the 11th.
+  const due = Model.taskDueDate(task({ dueDate: allDayStamp(2026, 8, 12) }))
   assert.equal(due.getFullYear(), 2026)
   assert.equal(due.getMonth(), 7)
   assert.equal(due.getDate(), 12)
@@ -46,8 +59,8 @@ test('a timed due date is parsed as an instant', () => {
 
 test('dueTasks keeps today and drops later days on the Today horizon', () => {
   const tasks = [
-    task({ id: 'today', dueDate: '2026-08-12T00:00:00.000+0000' }),
-    task({ id: 'later', dueDate: '2026-08-20T00:00:00.000+0000' })
+    task({ id: 'today', dueDate: allDayStamp(2026, 8, 12) }),
+    task({ id: 'later', dueDate: allDayStamp(2026, 8, 20) })
   ]
   const due = Model.dueTasks(tasks, { now: NOW, horizon: 'Today' })
   assert.deepEqual(due.map(t => t.id), ['today'])
@@ -55,8 +68,8 @@ test('dueTasks keeps today and drops later days on the Today horizon', () => {
 
 test('the Next 7 days horizon reaches a week out but not past it', () => {
   const tasks = [
-    task({ id: 'in6', dueDate: '2026-08-18T00:00:00.000+0000' }),
-    task({ id: 'in9', dueDate: '2026-08-21T00:00:00.000+0000' })
+    task({ id: 'in6', dueDate: allDayStamp(2026, 8, 18) }),
+    task({ id: 'in9', dueDate: allDayStamp(2026, 8, 21) })
   ]
   const due = Model.dueTasks(tasks, { now: NOW, horizon: 'Next 7 days' })
   assert.deepEqual(due.map(t => t.id), ['in6'])
@@ -64,8 +77,8 @@ test('the Next 7 days horizon reaches a week out but not past it', () => {
 
 test('overdue tasks sort ahead of everything due today', () => {
   const tasks = [
-    task({ id: 'today', dueDate: '2026-08-12T00:00:00.000+0000' }),
-    task({ id: 'late', dueDate: '2026-08-09T00:00:00.000+0000' })
+    task({ id: 'today', dueDate: allDayStamp(2026, 8, 12) }),
+    task({ id: 'late', dueDate: allDayStamp(2026, 8, 9) })
   ]
   const due = Model.dueTasks(tasks, { now: NOW, horizon: 'Today' })
   assert.deepEqual(due.map(t => t.id), ['late', 'today'])
@@ -73,8 +86,8 @@ test('overdue tasks sort ahead of everything due today', () => {
 
 test('includeOverdue false hides the backlog', () => {
   const tasks = [
-    task({ id: 'today', dueDate: '2026-08-12T00:00:00.000+0000' }),
-    task({ id: 'late', dueDate: '2026-08-09T00:00:00.000+0000' })
+    task({ id: 'today', dueDate: allDayStamp(2026, 8, 12) }),
+    task({ id: 'late', dueDate: allDayStamp(2026, 8, 9) })
   ]
   const due = Model.dueTasks(tasks, { now: NOW, horizon: 'Today', includeOverdue: false })
   assert.deepEqual(due.map(t => t.id), ['today'])
@@ -82,40 +95,40 @@ test('includeOverdue false hides the backlog', () => {
 
 test('completed, abandoned, undated, and deleted tasks never show', () => {
   const tasks = [
-    task({ id: 'done', status: 2, dueDate: '2026-08-12T00:00:00.000+0000' }),
-    task({ id: 'wontdo', status: -1, dueDate: '2026-08-12T00:00:00.000+0000' }),
+    task({ id: 'done', status: 2, dueDate: allDayStamp(2026, 8, 12) }),
+    task({ id: 'wontdo', status: -1, dueDate: allDayStamp(2026, 8, 12) }),
     task({ id: 'undated' }),
-    task({ id: 'gone', deleted: 1, dueDate: '2026-08-12T00:00:00.000+0000' })
+    task({ id: 'gone', deleted: 1, dueDate: allDayStamp(2026, 8, 12) })
   ]
   assert.deepEqual(Model.dueTasks(tasks, { now: NOW }), [])
 })
 
 test('same-day ties break on priority, high first', () => {
   const tasks = [
-    task({ id: 'low', priority: 1, dueDate: '2026-08-12T00:00:00.000+0000' }),
-    task({ id: 'high', priority: 5, dueDate: '2026-08-12T00:00:00.000+0000' })
+    task({ id: 'low', priority: 1, dueDate: allDayStamp(2026, 8, 12) }),
+    task({ id: 'high', priority: 5, dueDate: allDayStamp(2026, 8, 12) })
   ]
   const due = Model.dueTasks(tasks, { now: NOW })
   assert.deepEqual(due.map(t => t.id), ['high', 'low'])
 })
 
 test('an all-day task due today is not overdue at 2pm', () => {
-  assert.equal(Model.isOverdue(task({ dueDate: '2026-08-12T00:00:00.000+0000' }), NOW), false)
+  assert.equal(Model.isOverdue(task({ dueDate: allDayStamp(2026, 8, 12) }), NOW), false)
 })
 
 test('a timed task from this morning is overdue at 2pm', () => {
-  const morning = task({ isAllDay: false, dueDate: '2026-08-12T09:00:00.000-0500' })
+  const morning = task({ isAllDay: false, dueDate: stampFor(new Date(2026, 7, 12, 9, 0, 0)) })
   assert.equal(Model.isOverdue(morning, NOW), true)
 })
 
 // --- labels --------------------------------------------------------------
 
 test('dueLabel names the near days and counts the far ones', () => {
-  assert.equal(Model.dueLabel(task({ dueDate: '2026-08-12T00:00:00.000+0000' }), NOW), 'Today')
-  assert.equal(Model.dueLabel(task({ dueDate: '2026-08-13T00:00:00.000+0000' }), NOW), 'Tomorrow')
-  assert.equal(Model.dueLabel(task({ dueDate: '2026-08-11T00:00:00.000+0000' }), NOW), 'Yesterday')
-  assert.equal(Model.dueLabel(task({ dueDate: '2026-08-08T00:00:00.000+0000' }), NOW), '4d late')
-  assert.equal(Model.dueLabel(task({ dueDate: '2026-08-15T00:00:00.000+0000' }), NOW), '3d')
+  assert.equal(Model.dueLabel(task({ dueDate: allDayStamp(2026, 8, 12) }), NOW), 'Today')
+  assert.equal(Model.dueLabel(task({ dueDate: allDayStamp(2026, 8, 13) }), NOW), 'Tomorrow')
+  assert.equal(Model.dueLabel(task({ dueDate: allDayStamp(2026, 8, 11) }), NOW), 'Yesterday')
+  assert.equal(Model.dueLabel(task({ dueDate: allDayStamp(2026, 8, 8) }), NOW), '4d late')
+  assert.equal(Model.dueLabel(task({ dueDate: allDayStamp(2026, 8, 15) }), NOW), '3d')
 })
 
 test('priorityRank maps TickTick 0/1/3/5', () => {
@@ -385,9 +398,9 @@ test('tagIndex tolerates junk', () => {
 })
 
 test('dueTier separates overdue, today, and upcoming', () => {
-  assert.equal(Model.dueTier(task({ dueDate: '2026-08-09T00:00:00.000+0000' }), NOW), 'overdue')
-  assert.equal(Model.dueTier(task({ dueDate: '2026-08-12T00:00:00.000+0000' }), NOW), 'today')
-  assert.equal(Model.dueTier(task({ dueDate: '2026-08-20T00:00:00.000+0000' }), NOW), 'upcoming')
+  assert.equal(Model.dueTier(task({ dueDate: allDayStamp(2026, 8, 9) }), NOW), 'overdue')
+  assert.equal(Model.dueTier(task({ dueDate: allDayStamp(2026, 8, 12) }), NOW), 'today')
+  assert.equal(Model.dueTier(task({ dueDate: allDayStamp(2026, 8, 20) }), NOW), 'upcoming')
 })
 
 test('an undated task is not treated as due today', () => {
@@ -396,7 +409,7 @@ test('an undated task is not treated as due today', () => {
 
 test('a timed task earlier today is overdue, not today', () => {
   assert.equal(
-    Model.dueTier(task({ isAllDay: false, dueDate: '2026-08-12T09:00:00.000-0500' }), NOW),
+    Model.dueTier(task({ isAllDay: false, dueDate: stampFor(new Date(2026, 7, 12, 9, 0, 0)) }), NOW),
     'overdue')
 })
 
@@ -568,8 +581,7 @@ test('every offered label resolves, so the picker cannot produce a dud', () => {
 function localAllDay(offsetDays) {
   const d = new Date()
   d.setDate(d.getDate() + offsetDays)
-  const p = n => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T00:00:00.000+0000`
+  return allDayStamp(d.getFullYear(), d.getMonth() + 1, d.getDate())
 }
 
 test('a task renders back into the grammar that would have made it', () => {

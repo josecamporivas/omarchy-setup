@@ -25,18 +25,13 @@ function parseApiDate(value) {
   return isNaN(parsed.getTime()) ? null : parsed
 }
 
-// An all-day task is a calendar date wearing a timestamp. Converting it
-// through the local zone is how "due today" becomes "due yesterday" for
-// anyone west of UTC, so the date part is read literally instead.
+// An all-day task is a calendar date stored as local midnight converted to
+// UTC — a Madrid task due on the 20th arrives as the 19th at 22:00Z. Reading
+// the date part literally therefore lands a day early for anyone east of
+// UTC. Parsing the instant and letting the local zone derive the calendar
+// day puts the due date back on the day the task actually means.
 function taskDueDate(task) {
   if (!task || !task.dueDate) return null
-  if (task.isAllDay) {
-    var head = String(task.dueDate).slice(0, 10).split("-")
-    if (head.length === 3) {
-      var day = new Date(Number(head[0]), Number(head[1]) - 1, Number(head[2]))
-      return isNaN(day.getTime()) ? null : day
-    }
-  }
   return parseApiDate(task.dueDate)
 }
 

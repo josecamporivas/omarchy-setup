@@ -974,8 +974,10 @@ def parse_due_argument(value: str) -> str:
             target = datetime.strptime(value.strip(), "%Y-%m-%d")
         except ValueError as error:
             raise TickTickError("--due wants today, tomorrow, yesterday, or YYYY-MM-DD") from error
-    # An all-day due date is stored as UTC midnight of the local day.
-    return target.strftime("%Y-%m-%dT00:00:00.000+0000")
+    # An all-day due date is stored as local midnight converted to UTC, which
+    # is what TickTick itself does. A bare UTC midnight reads a day early for
+    # anyone east of Greenwich.
+    return to_api_time(target)
 
 
 def query_checkin(session: dict, habit_id: str, stamp: int) -> dict | None:

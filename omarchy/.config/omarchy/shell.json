@@ -45,7 +45,8 @@
           "id": "omarchy.agents"
         },
         {
-          "id": "io.github.josecamporivas.ticktick"
+          "id": "io.github.josecamporivas.ticktick",
+          "barLabel": "Icon"
         },
         {
           "id": "omarchy.bluetooth"
