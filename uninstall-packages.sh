@@ -7,6 +7,7 @@ cd "$(dirname "$0")" || exit 1
 readonly PACMAN_PACKAGES=(
     1password-beta
     1password-cli
+    moonlight-qt
     xournalpp
     typora
     spotify
