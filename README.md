@@ -31,7 +31,14 @@ This setup does not install the following packages by default, but they are avai
 ./additional-packages/install-latex.sh
 ```
 
+For Spanish DNIe support (OpenSC, PC/SC, Chrome/Chromium and AutoFirma):
+
+```bash
+./additional-packages/install-spanish-dnie.sh
+```
+
 Here are the additional packages available:
 - LaTeX (`install-latex.sh`)
 - Maven (`install-maven.sh`)
 - Bun (`install-bun.sh`)
+- Spanish DNIe (`install-spanish-dnie.sh`)
