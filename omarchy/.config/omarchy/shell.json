@@ -1,18 +1,7 @@
 {
   "bar": {
-    "centerAnchor": "omarchy.clock",
     "layout": {
       "center": [
-        {
-          "id": "omarchy.indicators",
-          "items": [
-            "ScreenRecording",
-            "Reminder",
-            "NightLight",
-            "Dnd",
-            "StayAwake"
-          ]
-        },
         {
           "id": "omarchy.clock",
           "format": "dd.MM.yyyy | hh:mm",
@@ -21,12 +10,6 @@
           "birthYear": 2002,
           "lifeExpectancy": 90,
           "weekStartDay": "monday"
-        },
-        {
-          "id": "omarchy.keyboard-layout"
-        },
-        {
-          "id": "omarchy.system-update"
         }
       ],
       "left": [
@@ -40,6 +23,9 @@
       "right": [
         {
           "id": "omarchy.tray"
+        },
+        {
+          "id": "omarchy.keyboard-layout"
         },
         {
           "id": "omarchy.agents"
@@ -65,6 +51,23 @@
         },
         {
           "id": "omarchy.power"
+        }
+      ],
+      "centerBegin": [
+        {
+          "id": "omarchy.indicators",
+          "items": [
+            "ScreenRecording",
+            "Reminder",
+            "NightLight",
+            "Dnd",
+            "StayAwake"
+          ]
+        }
+      ],
+      "centerEnd": [
+        {
+          "id": "omarchy.system-update"
         }
       ]
     },
